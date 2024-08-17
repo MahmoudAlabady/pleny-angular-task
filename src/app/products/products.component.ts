@@ -2,12 +2,15 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ProductsService } from '../services/products.service';
 
 @Component({
   selector: 'app-products',
   standalone: true,
   imports: [    ReactiveFormsModule,CommonModule,HttpClientModule
   ],
+  providers: [ProductsService],
+
   templateUrl: './products.component.html',
   styleUrl: './products.component.scss'
 })
@@ -18,7 +21,7 @@ export class ProductsComponent  implements OnInit {
   limit: number = 10; // Products per page
   searchQuery: string = '';
   selectedCategory: string = '';
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private productsService: ProductsService) {}
 
   ngOnInit(): void {
     this.fetchProducts();
@@ -49,8 +52,9 @@ export class ProductsComponent  implements OnInit {
       url += `&category=${this.selectedCategory}`;
     }
   
-    this.http.get<any>(url)
-      .subscribe(response => {
+    // this.http.get<any>(url)
+    this.productsService.getProducts(this.limit,skip)
+      .subscribe((response: { products: any[]; total: number; }) => {
         this.products = response.products;
         this.totalProducts = response.total;
       });

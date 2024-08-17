@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 // import the HttpClientModule from @angular/common/http,
 
 import { HttpClientModule } from '@angular/common/http';
+import { UsersService } from '../services/users.service';
 
 // add it to the @NgModule.imports array.
 
@@ -15,13 +16,15 @@ import { HttpClientModule } from '@angular/common/http';
   standalone: true,
   imports: [    ReactiveFormsModule,CommonModule,HttpClientModule
   ],
+  providers: [UsersService],
+
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {
+  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router,private authService: UsersService) { // Inject the AuthService
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]],
@@ -30,7 +33,8 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      this.http.post('https://dummyjson.com/auth/login', this.loginForm.value)
+      // this.http.post('https://dummyjson.com/auth/login', this.loginForm.value)
+      this.authService.auth(this.loginForm.value)
         .subscribe({
           next: (response: any) => {
             // Save the authentication token
@@ -40,7 +44,7 @@ export class LoginComponent {
           },
           error: (error) => {
             console.error('Login failed', error);
-            // Handle error (e.g., show a message to the user)
+          
           }
         });
     }
