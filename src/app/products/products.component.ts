@@ -3,6 +3,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ProductsService } from '../services/products.service';
+import { CartService } from '../services/cart.service';
 
 @Component({
   selector: 'app-products',
@@ -21,7 +22,7 @@ export class ProductsComponent  implements OnInit {
   limit: number = 10; // Products per page
   searchQuery: string = '';
   selectedCategory: string = '';
-  constructor(private http: HttpClient,private productsService: ProductsService) {}
+  constructor(private http: HttpClient,private productsService: ProductsService, private cartService: CartService) {}
 
   ngOnInit(): void {
     this.fetchProducts();
@@ -39,7 +40,9 @@ export class ProductsComponent  implements OnInit {
     this.selectedCategory = target.value;
     this.fetchProducts();
   }
-  
+  addToCart(product: any): void {
+    this.cartService.addToCart(product);
+  }
   fetchProducts(): void {
     const skip = (this.currentPage - 1) * this.limit;
     let url = `https://dummyjson.com/products?limit=${this.limit}&skip=${skip}`;
